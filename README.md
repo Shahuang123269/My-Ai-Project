@@ -291,3 +291,39 @@ contains the conversation text locally and is ignored by Git. Do not enter API
 keys, passwords, ID numbers, or other sensitive data. This demo connects to the
 local MCP Server in one Python process so it is easy to debug; the same server
 can later be run through stdio for an external MCP host.
+
+## Day 9: Transparent RAG Knowledge Base
+
+`09_rag_learning_assistant.py` introduces RAG (Retrieval-Augmented
+Generation). It does not send every note to the model. Instead, it splits the
+local Markdown/text notes into short chunks, ranks them with the transparent
+BM25 retrieval formula, and sends only the best chunks to DeepSeek.
+
+```text
+Question → retrieve local note chunks → DeepSeek answers from those chunks → citations
+```
+
+The program prints the retrieved source labels before the answer. A source
+such as `mcp.md#片段2` lets you inspect exactly which local note passage was
+given to the model. If retrieval finds no relevant material, the program does
+not call the model and says that the local knowledge base lacks enough
+information.
+
+Run the offline tests first (no API cost):
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest -v
+```
+
+Then run the RAG assistant:
+
+```powershell
+.\.venv\Scripts\python.exe 09_rag_learning_assistant.py "根据我的笔记解释 RAG 是什么？"
+```
+
+Watch for this order: `[检索]` → `[来源]` → `[最终回答]`. Add your own `.md` or
+`.txt` note under `notes/`, then ask a question about it. That is the practical
+idea of RAG: update the source files and the assistant can use the new
+knowledge without retraining a model. The MCP Server also exposes
+`retrieve_note_chunks`, so a later Agent can discover this RAG tool just like
+the calculator and note-search tools.
