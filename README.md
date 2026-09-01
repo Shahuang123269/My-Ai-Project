@@ -1,4 +1,8 @@
-# 01 · Mini Agent: Day 1
+# My-Ai-Project
+
+练手项目：从零构建并理解一个带工具、记忆、LangGraph 和 MCP 的 AI Agent。
+
+## 01 · Mini Agent: Day 1
 
 This first exercise is deliberately **not** an agent framework. It makes one
 LLM request from a command-line program. The next exercises will add tools,
