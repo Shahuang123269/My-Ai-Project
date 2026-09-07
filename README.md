@@ -327,3 +327,37 @@ idea of RAG: update the source files and the assistant can use the new
 knowledge without retraining a model. The MCP Server also exposes
 `retrieve_note_chunks`, so a later Agent can discover this RAG tool just like
 the calculator and note-search tools.
+
+## Day 10: RAG Regression Evals
+
+`10_evaluate_rag.py` is an offline, repeatable quality gate for Day 9. It
+uses fixed questions in `evals/rag_retrieval_cases.json` to check whether the
+expected note source still appears in the top-k retrieval results. This metric
+is called **Hit@K**.
+
+```text
+fixed question → retrieve top K chunks → expected source found? → pass / fail
+```
+
+Run it before and after changing notes, chunking, or the retrieval algorithm.
+It does not call DeepSeek and costs nothing:
+
+```powershell
+.\.venv\Scripts\python.exe 10_evaluate_rag.py
+```
+
+The default benchmark requires 100% Hit@3. A failed case prints its expected
+source and the sources actually retrieved, so you can investigate a real
+regression instead of guessing. `rag_evaluation.py` also validates that a RAG
+answer's `【file#片段N】` citations only refer to chunks retrieved in that turn.
+
+To add a benchmark, append one JSON object to
+`evals/rag_retrieval_cases.json`:
+
+```json
+{
+  "id": "my-topic",
+  "question": "我要测试的问题",
+  "expected_sources": ["my-note.md"]
+}
+```
